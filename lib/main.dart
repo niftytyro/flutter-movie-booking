@@ -13,7 +13,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -25,8 +24,6 @@ class MyApp extends StatelessWidget {
         } else {
           initialRoute = Booking.pathName;
         }
-        print(snapshot.connectionState);
-        print(initialRoute);
         return MaterialApp(
           key: ValueKey(initialRoute),
           title: 'Movie Booking',

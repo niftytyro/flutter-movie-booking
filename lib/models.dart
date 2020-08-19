@@ -24,8 +24,6 @@ class MoviesModel extends ChangeNotifier {
       querySnapshot.docs.forEach((doc) {
         this.movies.add(doc.data());
       });
-      print('notifying...');
-      print(this.movies);
       notifyListeners();
     });
   }
