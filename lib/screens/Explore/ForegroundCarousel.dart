@@ -17,21 +17,15 @@ class ForegroundCarousel extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return Container(
+              height: constraints.maxHeight * 0.7,
               child: PageView(
-                // options: CarouselOptions(
-                //   height: constraints.maxHeight * 0.6,
-                //   viewportFraction: 0.7,
-                //   aspectRatio: 2.0,
-                //   enlargeCenterPage: true,
-                //   enableInfiniteScroll: false,
-                // ),
                 scrollDirection: Axis.horizontal,
                 controller: this.controller,
-
                 children: moviesList.movies.asMap().entries.map((entry) {
                   return Opacity(
                     opacity: this.index == entry.key ? 1.0 : 0.5,
                     child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20.0),
                       child: CachedNetworkImage(
                           imageUrl: entry.value['url']['tile']),
                     ),

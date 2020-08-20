@@ -21,11 +21,11 @@ class _ExploreState extends State<Explore> {
     super.initState();
     _backgroundController = PageController();
     _foregroundController =
-        PageController(viewportFraction: 0.8, keepPage: true);
+        PageController(viewportFraction: 0.7, keepPage: true);
     _foregroundController.addListener(() {
       print(_foregroundController.offset);
       _backgroundController.position
-          .jumpTo(_foregroundController.position.pixels * 1.25);
+          .jumpTo(_foregroundController.position.pixels * 1.43);
       setState(() {
         index = _foregroundController.page.round();
       });
