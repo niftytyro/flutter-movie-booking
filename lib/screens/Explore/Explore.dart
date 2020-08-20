@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/screens/Explore/BackgroundCarousel.dart';
 import 'package:movie_booking_app/screens/Explore/ForegroundCarousel.dart';
@@ -15,6 +14,7 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   PageController _backgroundController;
   PageController _foregroundController;
+  int index = 0;
 
   @override
   void initState() {
@@ -23,9 +23,12 @@ class _ExploreState extends State<Explore> {
     _foregroundController =
         PageController(viewportFraction: 0.8, keepPage: true);
     _foregroundController.addListener(() {
-      _backgroundController.animateTo(_foregroundController.offset,
-          duration: Duration(milliseconds: 100), curve: Curves.linear);
-      setState(() {});
+      print(_foregroundController.offset);
+      _backgroundController.position
+          .jumpTo(_foregroundController.position.pixels * 1.25);
+      setState(() {
+        index = _foregroundController.page.round();
+      });
     });
   }
 
@@ -48,6 +51,7 @@ class _ExploreState extends State<Explore> {
           ForegroundCarousel(
             moviesList: moviesList,
             controller: _foregroundController,
+            index: index,
           ),
         ],
       );

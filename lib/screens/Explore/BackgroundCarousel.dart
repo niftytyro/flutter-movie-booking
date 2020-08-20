@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:movie_booking_app/models.dart';
 
@@ -22,8 +21,8 @@ class BackgroundCarousel extends StatelessWidget {
               //   enlargeCenterPage: false,
               //   enableInfiniteScroll: false,
               // ),
+              pageSnapping: false,
               scrollDirection: Axis.horizontal,
-              reverse: true,
               controller: this.controller,
               children: moviesList.movies.map((movie) {
                 return FittedBox(

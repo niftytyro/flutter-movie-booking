@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/models.dart';
 
 class ForegroundCarousel extends StatelessWidget {
   MoviesModel moviesList;
   PageController controller;
+  int index;
 
-  ForegroundCarousel({this.moviesList, this.controller});
+  ForegroundCarousel({this.moviesList, this.controller, this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +28,13 @@ class ForegroundCarousel extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 controller: this.controller,
 
-                children: moviesList.movies.map((movie) {
-                  return Container(
-                    child: CachedNetworkImage(imageUrl: movie['url']['tile']),
+                children: moviesList.movies.asMap().entries.map((entry) {
+                  return Opacity(
+                    opacity: this.index == entry.key ? 1.0 : 0.5,
+                    child: Container(
+                      child: CachedNetworkImage(
+                          imageUrl: entry.value['url']['tile']),
+                    ),
                   );
                 }).toList(),
               ),
