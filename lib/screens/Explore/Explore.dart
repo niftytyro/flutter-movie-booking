@@ -42,20 +42,60 @@ class _ExploreState extends State<Explore> {
   @override
   Widget build(BuildContext context) {
     return Consumer<MoviesModel>(builder: (context, moviesList, child) {
-      return Stack(
-        children: <Widget>[
-          BackgroundCarousel(
-            moviesList: moviesList,
-            controller: _backgroundController,
-          ),
-          BottomOverlay(),
-          ForegroundCarousel(
-            moviesList: moviesList,
-            controller: _foregroundController,
-            index: index,
-          ),
-        ],
+      return Scaffold(
+        body: Stack(
+          children: <Widget>[
+            BackgroundCarousel(
+              moviesList: moviesList,
+              controller: _backgroundController,
+            ),
+            BottomOverlay(),
+            ForegroundCarousel(
+              moviesList: moviesList,
+              controller: _foregroundController,
+              index: index,
+            ),
+            BuyButton(),
+          ],
+        ),
       );
     });
+  }
+}
+
+class BuyButton extends StatelessWidget {
+  final TextStyle BuyStyle = const TextStyle(
+      color: Color(0xFFFFFFFF), fontSize: 13.0, fontWeight: FontWeight.w700);
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ConstrainedBox(
+            // margin: EdgeInsets.only(bottom: 10.0),
+            constraints: BoxConstraints(
+              minHeight: 50.0,
+              minWidth: constraints.maxWidth * 0.6,
+              maxHeight: 50.0,
+              maxWidth: constraints.maxWidth * 0.6,
+            ),
+            child: FlatButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                side: BorderSide(color: Colors.black87),
+              ),
+              color: Colors.black,
+              onPressed: () {},
+              child: Text(
+                'BUY TICKET',
+                style: BuyStyle,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

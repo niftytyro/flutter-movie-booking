@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:movie_booking_app/models.dart';
 import 'package:provider/provider.dart';
 import './screens/Explore/Explore.dart';
@@ -15,6 +16,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ));
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
@@ -30,6 +35,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
             visualDensity: VisualDensity.adaptivePlatformDensity,
+            fontFamily: 'Mulish',
           ),
           initialRoute: initialRoute,
           routes: {
