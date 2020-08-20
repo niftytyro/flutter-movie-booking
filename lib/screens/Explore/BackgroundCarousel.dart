@@ -1,0 +1,48 @@
+import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:movie_booking_app/models.dart';
+
+class BackgroundCarousel extends StatelessWidget {
+  MoviesModel moviesList;
+  PageController controller;
+
+  BackgroundCarousel({this.moviesList, this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Container(
+            child: PageView(
+              // options: CarouselOptions(
+              //   height: constraints.maxHeight,
+              //   viewportFraction: 1.0,
+              //   enlargeCenterPage: false,
+              //   enableInfiniteScroll: false,
+              // ),
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              controller: this.controller,
+              children: moviesList.movies.map((movie) {
+                return FittedBox(
+                  fit: BoxFit.fill,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: 100.0,
+                        minHeight: 100.0,
+                      ),
+                      child: CachedNetworkImage(imageUrl: movie['url']['tall']),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
