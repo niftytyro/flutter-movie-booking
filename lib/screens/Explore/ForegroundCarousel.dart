@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/models.dart';
+import 'package:movie_booking_app/screens/Explore/MovieCard.dart';
 
 class ForegroundCarousel extends StatelessWidget {
   MoviesModel moviesList;
@@ -25,9 +26,8 @@ class ForegroundCarousel extends StatelessWidget {
                   return Opacity(
                     opacity: this.index == entry.key ? 1.0 : 0.5,
                     child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: CachedNetworkImage(
-                          imageUrl: entry.value['url']['tile']),
+                      margin: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: MovieCard(imageURL: entry.value['url']['tile']),
                     ),
                   );
                 }).toList(),

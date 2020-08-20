@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/screens/Explore/BackgroundCarousel.dart';
+import 'package:movie_booking_app/screens/Explore/BottomOverlay.dart';
 import 'package:movie_booking_app/screens/Explore/ForegroundCarousel.dart';
 import 'package:provider/provider.dart';
 import 'package:movie_booking_app/models.dart';
@@ -23,7 +24,6 @@ class _ExploreState extends State<Explore> {
     _foregroundController =
         PageController(viewportFraction: 0.7, keepPage: true);
     _foregroundController.addListener(() {
-      print(_foregroundController.offset);
       _backgroundController.position
           .jumpTo(_foregroundController.position.pixels * 1.43);
       setState(() {
@@ -48,6 +48,7 @@ class _ExploreState extends State<Explore> {
             moviesList: moviesList,
             controller: _backgroundController,
           ),
+          BottomOverlay(),
           ForegroundCarousel(
             moviesList: moviesList,
             controller: _foregroundController,
