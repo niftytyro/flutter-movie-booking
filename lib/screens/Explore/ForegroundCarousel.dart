@@ -23,11 +23,20 @@ class ForegroundCarousel extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 controller: this.controller,
                 children: moviesList.movies.asMap().entries.map((entry) {
-                  return Opacity(
+                  return AnimatedOpacity(
+                    duration: Duration(milliseconds: 250),
                     opacity: this.index == entry.key ? 1.0 : 0.7,
-                    child: Transform.scale(
-                      scale: this.index == entry.key ? 1.0 : 0.8,
-                      child: MovieCard(movie: entry.value),
+                    child: TweenAnimationBuilder(
+                      duration: Duration(milliseconds: 250),
+                      tween: Tween<double>(
+                          begin: (this.index == entry.key ? 0.8 : 1.0),
+                          end: (this.index == entry.key ? 1.0 : 0.8)),
+                      builder: (context, scale, child) {
+                        return Transform.scale(
+                          scale: scale,
+                          child: MovieCard(movie: entry.value),
+                        );
+                      },
                     ),
                   );
                 }).toList(),

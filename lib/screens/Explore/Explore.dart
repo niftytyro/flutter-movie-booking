@@ -74,7 +74,6 @@ class BuyButton extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return ConstrainedBox(
-            // margin: EdgeInsets.only(bottom: 10.0),
             constraints: BoxConstraints(
               minHeight: 50.0,
               minWidth: constraints.maxWidth * 0.6,

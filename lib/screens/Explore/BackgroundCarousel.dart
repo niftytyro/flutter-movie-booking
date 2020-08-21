@@ -15,12 +15,7 @@ class BackgroundCarousel extends StatelessWidget {
         builder: (context, constraints) {
           return Container(
             child: PageView(
-              // options: CarouselOptions(
-              //   height: constraints.maxHeight,
-              //   viewportFraction: 1.0,
-              //   enlargeCenterPage: false,
-              //   enableInfiniteScroll: false,
-              // ),
+              reverse: true,
               pageSnapping: false,
               scrollDirection: Axis.horizontal,
               controller: this.controller,

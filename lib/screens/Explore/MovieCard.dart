@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class MovieCard extends StatelessWidget {
-  var movie;
+  final movie;
 
   MovieCard({Key key, this.movie}) : super(key: key);
 
@@ -17,23 +17,40 @@ class MovieCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(30.0),
           ),
           height: constraints.maxHeight,
-          padding: EdgeInsets.all(0.1 * constraints.maxWidth),
+          padding: EdgeInsets.all(0.05 * constraints.maxHeight),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              CardImage(movie: movie, constraints: constraints),
-              CardTitle(
-                title: movie['name'],
+              CardImage(
+                  movie: movie,
+                  constraints: BoxConstraints(
+                    minWidth: constraints.maxWidth,
+                    minHeight: 0.6 * constraints.maxHeight,
+                    maxWidth: constraints.maxWidth,
+                    maxHeight: 0.6 * constraints.maxHeight,
+                  )),
+              Container(
+                height: constraints.maxHeight * 0.25,
+                padding: EdgeInsets.only(bottom: 10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CardTitle(
+                      title: movie['name'],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: movie['tags'].map<Widget>((tag) {
+                        return CardTag(tag: tag);
+                      }).toList(),
+                    ),
+                    CardRating(
+                      rating: movie['rating'],
+                    ),
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: movie['tags'].map<Widget>((tag) {
-                  return CardTag(tag: tag);
-                }).toList(),
-              ),
-              CardRating(
-                rating: movie['rating'],
-              )
             ],
           ),
         );
@@ -80,7 +97,7 @@ class CardTag extends StatelessWidget {
   const CardTag({Key key, @required this.tag}) : super(key: key);
 
   final String tag;
-  final TextStyle TagStyle =
+  final TextStyle tagStyle =
       const TextStyle(fontSize: 8.0, color: Color(0xFFBDBDBD));
 
   @override
@@ -89,11 +106,10 @@ class CardTag extends StatelessWidget {
       decoration: BoxDecoration(
           border: Border.all(color: Colors.grey[400]),
           borderRadius: BorderRadius.circular(50.0)),
-      margin: EdgeInsets.symmetric(horizontal: 3.0),
       padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
       child: Text(
         tag,
-        style: TagStyle,
+        style: tagStyle,
       ),
     );
   }
@@ -136,12 +152,7 @@ class CardImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth: constraints.maxWidth,
-        minHeight: 0.3 * constraints.maxHeight,
-        maxWidth: constraints.maxWidth,
-        maxHeight: 0.6 * constraints.maxHeight,
-      ),
+      constraints: constraints,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30.0),
         child: FittedBox(
