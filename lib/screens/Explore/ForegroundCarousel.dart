@@ -6,7 +6,7 @@ import 'package:movie_booking_app/screens/Explore/MovieCard.dart';
 class ForegroundCarousel extends StatelessWidget {
   MoviesModel moviesList;
   PageController controller;
-  int index;
+  double index;
 
   ForegroundCarousel({this.moviesList, this.controller, this.index});
 
@@ -23,20 +23,11 @@ class ForegroundCarousel extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 controller: this.controller,
                 children: moviesList.movies.asMap().entries.map((entry) {
-                  return AnimatedOpacity(
-                    duration: Duration(milliseconds: 250),
-                    opacity: this.index == entry.key ? 1.0 : 0.7,
-                    child: TweenAnimationBuilder(
-                      duration: Duration(milliseconds: 250),
-                      tween: Tween<double>(
-                          begin: (this.index == entry.key ? 0.8 : 1.0),
-                          end: (this.index == entry.key ? 1.0 : 0.8)),
-                      builder: (context, scale, child) {
-                        return Transform.scale(
-                          scale: scale,
-                          child: MovieCard(movie: entry.value),
-                        );
-                      },
+                  return Opacity(
+                    opacity: 1.0 - ((this.index - entry.key).abs() * 0.25),
+                    child: Transform.scale(
+                      scale: 1.0 - ((this.index - entry.key).abs() * 0.25),
+                      child: MovieCard(movie: entry.value),
                     ),
                   );
                 }).toList(),

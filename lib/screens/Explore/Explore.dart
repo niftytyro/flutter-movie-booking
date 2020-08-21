@@ -15,7 +15,7 @@ class Explore extends StatefulWidget {
 class _ExploreState extends State<Explore> {
   PageController _backgroundController;
   PageController _foregroundController;
-  int index = 0;
+  double index = 0.0;
 
   @override
   void initState() {
@@ -27,7 +27,8 @@ class _ExploreState extends State<Explore> {
       _backgroundController.position
           .jumpTo(_foregroundController.position.pixels * 1.43);
       setState(() {
-        index = _foregroundController.page.round();
+        index = _foregroundController.page;
+        print(_foregroundController.page);
       });
     });
   }
@@ -73,7 +74,8 @@ class BuyButton extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return ConstrainedBox(
+          return Container(
+            margin: EdgeInsets.only(bottom: 10.0),
             constraints: BoxConstraints(
               minHeight: 50.0,
               minWidth: constraints.maxWidth * 0.6,
