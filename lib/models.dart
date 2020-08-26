@@ -1,20 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
-class SelectedMovieModel {
-  String selectedMovie;
-
-  String get getSelectedMovie {
-    return selectedMovie;
-  }
-
-  set setSelectedMovie(movie) {
-    selectedMovie = movie;
-  }
-}
-
 class MoviesModel extends ChangeNotifier {
   List movies = [];
+
+  int selectedIndex = 0;
 
   MoviesModel() {
     final CollectionReference moviesCollection =
@@ -25,9 +15,5 @@ class MoviesModel extends ChangeNotifier {
       });
       notifyListeners();
     });
-  }
-
-  List get getMovies {
-    return movies;
   }
 }

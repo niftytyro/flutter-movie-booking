@@ -16,51 +16,67 @@ class _ExploreState extends State<Explore> {
   PageController _backgroundController;
   PageController _foregroundController;
   double index = 0.0;
+  bool showDetails = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     _backgroundController = PageController();
-    _foregroundController =
-        PageController(viewportFraction: 0.7, keepPage: true);
-    _foregroundController.addListener(() {
+    this._foregroundController = PageController(viewportFraction: 0.7);
+    this._foregroundController.addListener(() {
       _backgroundController.position
-          .jumpTo(_foregroundController.position.pixels * 1.43);
+          .jumpTo(this._foregroundController.position.pixels * 1.43);
       setState(() {
-        index = _foregroundController.page;
-        print(_foregroundController.page);
+        this.index = this._foregroundController.page;
       });
     });
+    super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     _backgroundController.dispose();
-    _foregroundController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<MoviesModel>(builder: (context, moviesList, child) {
-      return Scaffold(
-        body: Stack(
-          children: <Widget>[
-            BackgroundCarousel(
-              moviesList: moviesList,
-              controller: _backgroundController,
-            ),
-            BottomOverlay(),
-            ForegroundCarousel(
-              moviesList: moviesList,
-              controller: _foregroundController,
-              index: index,
-            ),
-            BuyButton(),
-          ],
-        ),
-      );
-    });
+    return Consumer<MoviesModel>(
+      builder: (context, moviesList, child) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: <Widget>[
+              BackgroundCarousel(
+                moviesList: moviesList,
+                controller: _backgroundController,
+                showDetails: this.showDetails,
+                index: this.index,
+              ),
+              BottomOverlay(),
+              ForegroundCarousel(
+                moviesList: moviesList,
+                controller: this._foregroundController,
+                index: index,
+                showDetails: this.showDetails,
+                onCardTap: () {
+                  if (!this.showDetails) {
+                    setState(() {
+                      this.showDetails = true;
+                    });
+                  }
+                },
+                onDragDown: () {
+                  setState(() {
+                    this.showDetails = false;
+                  });
+                },
+              ),
+              BuyButton(),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 

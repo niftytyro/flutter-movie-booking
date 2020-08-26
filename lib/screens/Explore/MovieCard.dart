@@ -2,56 +2,155 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
-class MovieCard extends StatelessWidget {
+class MovieCard extends StatefulWidget {
   final movie;
+  final Function onCardTap;
+  final Function onDragDown;
+  bool showDetails;
+  MovieCard(
+      {Key key, this.movie, this.showDetails, this.onCardTap, this.onDragDown})
+      : super(key: key);
 
-  MovieCard({Key key, this.movie}) : super(key: key);
+  @override
+  _MovieCardState createState() => _MovieCardState();
+}
+
+class _MovieCardState extends State<MovieCard>
+    with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+  Duration _animationDuration;
+  var imageTween;
+  var imageScaleTween;
+  var containerScaleTween;
+
+  @override
+  void initState() {
+    super.initState();
+    this._animationDuration = Duration(seconds: 1);
+    this._animationController = AnimationController(
+      duration: this._animationDuration,
+      vsync: this,
+    );
+    this.containerScaleTween = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: this._animationController,
+        curve: Interval(
+          0.0,
+          0.400,
+          curve: Curves.ease,
+        ),
+      ),
+    );
+    this.imageScaleTween = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: this._animationController,
+        curve: Interval(
+          0.0,
+          0.250,
+          curve: Curves.ease,
+        ),
+      ),
+    );
+    this.imageTween = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: this._animationController,
+        curve: Interval(
+          0.200,
+          0.400,
+          curve: Curves.bounceInOut,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30.0),
-          ),
-          height: constraints.maxHeight,
-          padding: EdgeInsets.all(0.05 * constraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CardImage(
-                  movie: movie,
-                  constraints: BoxConstraints(
-                    minWidth: constraints.maxWidth,
-                    minHeight: 0.6 * constraints.maxHeight,
-                    maxWidth: constraints.maxWidth,
-                    maxHeight: 0.6 * constraints.maxHeight,
-                  )),
-              Container(
-                height: constraints.maxHeight * 0.25,
-                padding: EdgeInsets.only(bottom: 10.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CardTitle(
-                      title: movie['name'],
+        return GestureDetector(
+          onTap: () {
+            this.widget.onCardTap();
+            this._animationController.forward();
+          },
+          onVerticalDragEnd: (details) {
+            if (details.velocity.pixelsPerSecond.dy > 50) {
+              this.widget.onDragDown();
+              this._animationController.reverse();
+            }
+          },
+          child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return OverflowBox(
+                minWidth: 0.0,
+                minHeight: 0.0,
+                maxWidth: screenWidth,
+                maxHeight: constraints.maxHeight,
+                child: UnconstrainedBox(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: movie['tags'].map<Widget>((tag) {
-                        return CardTag(tag: tag);
-                      }).toList(),
+                    height: constraints.maxHeight,
+                    width: constraints.maxWidth +
+                        this.containerScaleTween.value *
+                            (screenWidth - constraints.maxWidth),
+                    padding: EdgeInsets.all(0.05 * constraints.maxHeight),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Transform.scale(
+                          scale: 1.0 - (this.imageScaleTween.value),
+                          child: CardImage(
+                            movie: this.widget.movie,
+                            constraints: BoxConstraints(
+                              minWidth: (1.0 - this.imageTween.value) *
+                                  constraints.maxWidth,
+                              minHeight: (0.6 - (this.imageTween.value * 0.6)) *
+                                  constraints.maxHeight,
+                              maxWidth: (1.0 - this.imageTween.value) *
+                                  constraints.maxWidth,
+                              maxHeight: (0.6 - (this.imageTween.value * 0.6)) *
+                                  constraints.maxHeight,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: constraints.maxHeight * 0.25,
+                          padding: EdgeInsets.only(bottom: 10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CardTitle(
+                                title: this.widget.movie['name'],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: this
+                                    .widget
+                                    .movie['tags']
+                                    .map<Widget>((tag) {
+                                  return CardTag(tag: tag);
+                                }).toList(),
+                              ),
+                              CardRating(
+                                rating: this.widget.movie['rating'],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    CardRating(
-                      rating: movie['rating'],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         );
       },
@@ -66,29 +165,26 @@ class CardRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            rating.toStringAsFixed(1),
-          ),
-          SmoothStarRating(
-            rating: rating * 5 / 10,
-            isReadOnly: true,
-            size: 20.0,
-            filledIconData: Icons.star,
-            halfFilledIconData: Icons.star_half,
-            defaultIconData: Icons.star_border,
-            starCount: 5,
-            allowHalfRating: true,
-            spacing: 2.0,
-            color: Colors.amber[900],
-            borderColor: Colors.amber[900],
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          rating.toStringAsFixed(1),
+        ),
+        SmoothStarRating(
+          rating: rating * 5 / 10,
+          isReadOnly: true,
+          size: 20.0,
+          filledIconData: Icons.star,
+          halfFilledIconData: Icons.star_half,
+          defaultIconData: Icons.star_border,
+          starCount: 5,
+          allowHalfRating: true,
+          spacing: 2.0,
+          color: Colors.amber[900],
+          borderColor: Colors.amber[900],
+        ),
+      ],
     );
   }
 }
@@ -107,6 +203,7 @@ class CardTag extends StatelessWidget {
           border: Border.all(color: Colors.grey[400]),
           borderRadius: BorderRadius.circular(50.0)),
       padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 3.0),
+      margin: EdgeInsets.symmetric(horizontal: 5.0),
       child: Text(
         tag,
         style: tagStyle,
@@ -129,12 +226,9 @@ class CardTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.0),
-      child: Text(
-        this.title,
-        style: TitleStyle,
-      ),
+    return Text(
+      this.title,
+      style: TitleStyle,
     );
   }
 }

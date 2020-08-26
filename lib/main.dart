@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           initialRoute: initialRoute,
           routes: {
             Explore.pathName: (context) => Explore(),
-            Booking.pathName: (context) => Booking()
+            Booking.pathName: (context) => Booking(),
           },
         );
       },
