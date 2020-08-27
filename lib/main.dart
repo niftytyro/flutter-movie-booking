@@ -14,6 +14,53 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  Route _onGenerateRoute(RouteSettings settings) {
+    Route page;
+    switch (settings.name) {
+      case Explore.pathName:
+        page = MaterialPageRoute(builder: (context) => Explore());
+        break;
+      case Booking.pathName:
+        page = PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => Booking(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              var tween = Tween<double>(begin: 0.0, end: 1.0);
+              return Stack(
+                children: [
+                  TweenAnimationBuilder(
+                    tween: tween,
+                    duration: Duration(milliseconds: 250),
+                    builder: (context, value, __) {
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(
+                                value > 0.7 ? 100.0 - value * 100.0 : 100.0),
+                          ),
+                          height: value * MediaQuery.of(context).size.height <
+                                  50.0
+                              ? 50.0
+                              : (value * MediaQuery.of(context).size.height),
+                          width:
+                              value * MediaQuery.of(context).size.width < 50.0
+                                  ? 50.0
+                                  : (value * MediaQuery.of(context).size.width),
+                          child: child,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            });
+        break;
+    }
+    return page;
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -38,10 +85,11 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Mulish',
           ),
           initialRoute: initialRoute,
-          routes: {
-            Explore.pathName: (context) => Explore(),
-            Booking.pathName: (context) => Booking(),
-          },
+          onGenerateRoute: this._onGenerateRoute,
+          // routes: {
+          //   Explore.pathName: (context) => Explore(),
+          //   Booking.pathName: (context) => Booking(),
+          // },
         );
       },
     );

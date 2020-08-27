@@ -5,6 +5,29 @@ class Booking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+        backgroundColor: Colors.black,
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              children: [
+                Container(
+                  color: Colors.white,
+                  width: constraints.maxWidth,
+                  height: 0.3 * constraints.maxHeight,
+                ),
+                Container(
+                  width: constraints.maxWidth,
+                  height: 0.45 * constraints.maxHeight,
+                ),
+                Container(
+                  color: Colors.red,
+                  width: constraints.maxWidth,
+                  height: 0.25 * constraints.maxHeight,
+                ),
+              ],
+            );
+          },
+        ));
   }
 }

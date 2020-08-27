@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/screens/Booking/Booking.dart';
 import 'package:movie_booking_app/screens/Explore/BackgroundCarousel.dart';
 import 'package:movie_booking_app/screens/Explore/BottomOverlay.dart';
 import 'package:movie_booking_app/screens/Explore/ForegroundCarousel.dart';
@@ -122,9 +123,7 @@ class _ExploreState extends State<Explore> with SingleTickerProviderStateMixin {
   }
 }
 
-class BuyButton extends StatelessWidget {
-  final TextStyle buyStyle = const TextStyle(
-      color: Color(0xFFFFFFFF), fontSize: 13.0, fontWeight: FontWeight.w700);
+class BuyButton extends StatefulWidget {
   Animation scaleTween;
   final Function registerTween;
   final AnimationController controller;
@@ -136,41 +135,78 @@ class BuyButton extends StatelessWidget {
         );
 
   @override
+  _BuyButtonState createState() => _BuyButtonState();
+}
+
+class _BuyButtonState extends State<BuyButton>
+    with SingleTickerProviderStateMixin {
+  final TextStyle buyStyle = const TextStyle(
+      color: Color(0xFFFFFFFF), fontSize: 13.0, fontWeight: FontWeight.w700);
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    this._animationController = AnimationController(
+      duration: Duration(milliseconds: 250),
+      vsync: this,
+    );
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: this.controller,
+        animation: this.widget.controller,
         builder: (_, __) {
           return Align(
             alignment: Alignment.bottomCenter,
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return Container(
-                  margin: EdgeInsets.only(bottom: 10.0),
-                  constraints: BoxConstraints(
-                    minHeight: 50.0,
-                    minWidth: constraints.maxWidth *
-                        (0.6 + this.scaleTween.value * 0.4),
-                    maxHeight: 50.0,
-                    maxWidth: constraints.maxWidth *
-                        (0.6 + this.scaleTween.value * 0.4),
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 0.05 * constraints.maxWidth),
-                    child: FlatButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        side: BorderSide(color: Colors.black87),
-                      ),
-                      color: Colors.black,
-                      onPressed: () {},
-                      child: Text(
-                        'BUY TICKET',
-                        style: buyStyle,
-                      ),
-                    ),
-                  ),
-                );
+                return AnimatedBuilder(
+                    animation: this._animationController,
+                    builder: (_, __) {
+                      double buttonWidth = constraints.maxWidth *
+                              (0.6 + this.widget.scaleTween.value * 0.4) -
+                          (this._animationController.value *
+                              MediaQuery.of(context).size.width);
+                      if (buttonWidth < 50.0 + 0.1 * constraints.maxWidth) {
+                        buttonWidth = 50.0 + 0.1 * constraints.maxWidth;
+                        print(buttonWidth);
+                      }
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 10.0),
+                        constraints: BoxConstraints(
+                          minHeight: 50.0,
+                          minWidth: buttonWidth,
+                          maxHeight: 50.0,
+                          maxWidth: buttonWidth,
+                        ),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 0.05 * constraints.maxWidth),
+                          child: FlatButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  5.0 + this._animationController.value * 95.0),
+                              side: BorderSide(color: Colors.black87),
+                            ),
+                            color: Colors.black,
+                            onPressed: () {
+                              this._animationController.forward();
+                              Future.delayed(const Duration(milliseconds: 300),
+                                  () {
+                                this._animationController.reverse();
+                                Navigator.pushNamed(context, Booking.pathName);
+                              });
+                            },
+                            child: Text(
+                              buttonWidth > 200.0 ? 'BUY TICKET' : '',
+                              style: buyStyle,
+                            ),
+                          ),
+                        ),
+                      );
+                    });
               },
             ),
           );
