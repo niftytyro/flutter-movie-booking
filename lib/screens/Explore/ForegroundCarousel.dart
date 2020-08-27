@@ -8,15 +8,20 @@ class ForegroundCarousel extends StatelessWidget {
   final double index;
   final Function onCardTap;
   final Function onDragDown;
-  PageController controller;
+  final Function registerTween;
+  final PageController controller;
+  final AnimationController animationController;
 
-  ForegroundCarousel(
-      {this.moviesList,
-      this.onCardTap,
-      this.showDetails,
-      this.index,
-      this.onDragDown,
-      this.controller});
+  ForegroundCarousel({
+    this.moviesList,
+    this.onCardTap,
+    this.showDetails,
+    this.index,
+    this.onDragDown,
+    this.controller,
+    this.registerTween,
+    this.animationController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +48,8 @@ class ForegroundCarousel extends StatelessWidget {
                         showDetails: this.index == entry.key.toDouble()
                             ? this.showDetails
                             : false,
+                        registerTween: this.registerTween,
+                        animationController: this.animationController,
                         onCardTap: this.onCardTap,
                         onDragDown: this.onDragDown,
                       ),

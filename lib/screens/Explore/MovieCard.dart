@@ -6,10 +6,18 @@ class MovieCard extends StatefulWidget {
   final movie;
   final Function onCardTap;
   final Function onDragDown;
+  final Function registerTween;
+  final AnimationController animationController;
   bool showDetails;
-  MovieCard(
-      {Key key, this.movie, this.showDetails, this.onCardTap, this.onDragDown})
-      : super(key: key);
+  MovieCard({
+    Key key,
+    this.movie,
+    this.showDetails,
+    this.onCardTap,
+    this.onDragDown,
+    this.registerTween,
+    this.animationController,
+  }) : super(key: key);
 
   @override
   _MovieCardState createState() => _MovieCardState();
@@ -17,8 +25,6 @@ class MovieCard extends StatefulWidget {
 
 class _MovieCardState extends State<MovieCard>
     with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
-  Duration _animationDuration;
   var imageTween;
   var imageScaleTween;
   var containerScaleTween;
@@ -26,41 +32,12 @@ class _MovieCardState extends State<MovieCard>
   @override
   void initState() {
     super.initState();
-    this._animationDuration = Duration(seconds: 1);
-    this._animationController = AnimationController(
-      duration: this._animationDuration,
-      vsync: this,
-    );
-    this.containerScaleTween = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: this._animationController,
-        curve: Interval(
-          0.0,
-          0.400,
-          curve: Curves.ease,
-        ),
-      ),
-    );
-    this.imageScaleTween = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: this._animationController,
-        curve: Interval(
-          0.0,
-          0.250,
-          curve: Curves.ease,
-        ),
-      ),
-    );
-    this.imageTween = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: this._animationController,
-        curve: Interval(
-          0.200,
-          0.400,
-          curve: Curves.bounceInOut,
-        ),
-      ),
-    );
+    this.containerScaleTween = this.widget.registerTween(
+        startInterval: 0.0, endInterval: 0.400, curve: Curves.linear);
+    this.imageScaleTween = this.widget.registerTween(
+        startInterval: 0.0, endInterval: 0.250, curve: Curves.easeOutBack);
+    this.imageTween = this.widget.registerTween(
+        startInterval: 0.250, endInterval: 0.400, curve: Curves.linear);
   }
 
   @override
@@ -71,16 +48,14 @@ class _MovieCardState extends State<MovieCard>
         return GestureDetector(
           onTap: () {
             this.widget.onCardTap();
-            this._animationController.forward();
           },
           onVerticalDragEnd: (details) {
             if (details.velocity.pixelsPerSecond.dy > 50) {
               this.widget.onDragDown();
-              this._animationController.reverse();
             }
           },
           child: AnimatedBuilder(
-            animation: _animationController,
+            animation: this.widget.animationController,
             builder: (context, child) {
               return OverflowBox(
                 minWidth: 0.0,
@@ -142,9 +117,26 @@ class _MovieCardState extends State<MovieCard>
                               CardRating(
                                 rating: this.widget.movie['rating'],
                               ),
+                              if (this.widget.showDetails)
+                                Text(
+                                  'Director/' + this.widget.movie['director'],
+                                ),
                             ],
                           ),
                         ),
+                        if (this.widget.showDetails) ...[
+                          SizedBox(
+                            height: 20.0,
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 50.0),
+                                child: CardDetails(movie: this.widget.movie),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -154,6 +146,123 @@ class _MovieCardState extends State<MovieCard>
           ),
         );
       },
+    );
+  }
+}
+
+class CardDetails extends StatelessWidget {
+  final movie;
+  CardDetails({this.movie});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
+          children: [
+            CardActors(movie: this.movie),
+            SizedBox(height: 40.0),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Introduction',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 18.0),
+                    ),
+                    Spacer(),
+                  ],
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Text(
+                  this.movie['introduction'],
+                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class CardActors extends StatelessWidget {
+  const CardActors({
+    Key key,
+    @required this.movie,
+  }) : super(key: key);
+
+  final movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              'Actors',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+            ),
+            Spacer(),
+          ],
+        ),
+        SizedBox(height: 15.0),
+        IntrinsicHeight(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: movie['actors'].asMap().entries.map<Widget>((actor) {
+              return Flexible(
+                flex: 1,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      right:
+                          actor.key == movie['actors'].length - 1 ? 0.0 : 10.0),
+                  child: CardActor(
+                    actor: actor,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class CardActor extends StatelessWidget {
+  const CardActor({
+    Key key,
+    this.actor,
+  }) : super(key: key);
+
+  final actor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          height: 100.0,
+          margin: EdgeInsets.only(bottom: 10.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: CachedNetworkImage(
+              imageUrl: actor.value['url'],
+            ),
+          ),
+        ),
+        Text(
+          actor.value['name'],
+          style: TextStyle(fontSize: 10.0),
+        ),
+      ],
     );
   }
 }

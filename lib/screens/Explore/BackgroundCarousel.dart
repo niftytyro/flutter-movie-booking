@@ -7,9 +7,34 @@ class BackgroundCarousel extends StatelessWidget {
   PageController controller;
   bool showDetails;
   double index;
+  final Function registerTween;
+  final AnimationController animationController;
+  Animation activeSpringTween;
+  Animation inactiveSpringTween;
 
-  BackgroundCarousel(
-      {this.moviesList, this.controller, this.showDetails, this.index});
+  BackgroundCarousel({
+    this.moviesList,
+    this.controller,
+    this.showDetails,
+    this.index,
+    this.registerTween,
+    this.animationController,
+  }) {
+    this.activeSpringTween = this.registerTween(
+      startValue: 1.0,
+      endValue: 0.0,
+      startInterval: 0.100,
+      endInterval: 0.900,
+      curve: Curves.easeInOutBack,
+    );
+    this.inactiveSpringTween = this.registerTween(
+      startValue: 1.0,
+      endValue: 0.0,
+      startInterval: 0.200,
+      endInterval: 1.0,
+      curve: Curves.easeInOutBack,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,55 +51,67 @@ class BackgroundCarousel extends StatelessWidget {
       if (!suffix) movies.add(this.moviesList.movies[this.index.round() + 1]);
       return LayoutBuilder(
         builder: (context, constraints) {
-          return Container(
-            constraints: BoxConstraints(
-              minHeight: constraints.maxHeight * 0.5,
-              maxHeight: constraints.maxHeight * 0.5,
-            ),
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (prefix) Spacer(),
-                      ...movies.asMap().entries.map((entry) {
-                        return Opacity(
-                          opacity: 0.5,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                            ),
-                            constraints: BoxConstraints(
-                              minWidth: 100.0,
-                              minHeight: 100.0,
-                              maxWidth: 0.33 * constraints.maxWidth,
-                              maxHeight: 0.5 * constraints.maxHeight,
-                            ),
-                            child: FittedBox(
-                              fit: BoxFit.fill,
-                              child: CachedNetworkImage(
-                                  imageUrl: entry.value['url']['tile']),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                      if (suffix) Spacer(),
-                    ],
-                  ),
+          return AnimatedBuilder(
+            animation: this.animationController,
+            builder: (context, child) {
+              return Container(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight * 0.5,
+                  maxHeight: constraints.maxHeight * 0.5,
                 ),
-                Align(
-                  alignment: Alignment.center,
-                  child: TweenAnimationBuilder(
-                    duration: Duration(milliseconds: 500),
-                    tween: Tween(begin: 2.0, end: 0.0),
-                    curve: Curves.easeOutBack,
-                    builder: (_, translate, __) {
-                      return Transform.translate(
-                        offset: Offset(0.0, 100.0 * translate),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (prefix) Spacer(),
+                          ...movies.asMap().entries.map((entry) {
+                            return Transform.translate(
+                              offset: Offset(
+                                  0.0,
+                                  0.5 *
+                                      constraints.maxHeight *
+                                      this.inactiveSpringTween.value),
+                              child: Opacity(
+                                opacity: 0.5,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                  ),
+                                  constraints: BoxConstraints(
+                                    minWidth: 100.0,
+                                    minHeight: 100.0,
+                                    maxWidth: 0.33 * constraints.maxWidth,
+                                    maxHeight: 0.5 * constraints.maxHeight,
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.fill,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      child: CachedNetworkImage(
+                                          imageUrl: entry.value['url']['tile']),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          if (suffix) Spacer(),
+                        ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Transform.translate(
+                        offset: Offset(
+                            0.0,
+                            0.5 *
+                                constraints.maxHeight *
+                                this.activeSpringTween.value),
                         child: Transform.scale(
                           scale: 1.5,
                           child: Container(
@@ -89,19 +126,23 @@ class BackgroundCarousel extends StatelessWidget {
                             ),
                             child: FittedBox(
                               fit: BoxFit.fill,
-                              child: CachedNetworkImage(
-                                  imageUrl:
-                                      this.moviesList.movies[this.index.round()]
-                                          ['url']['tile']),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.0),
+                                child: CachedNetworkImage(
+                                    imageUrl: this
+                                            .moviesList
+                                            .movies[this.index.round()]['url']
+                                        ['tile']),
+                              ),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       );
@@ -117,19 +158,49 @@ class BackgroundCarousel extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 controller: this.controller,
                 children: moviesList.movies.map((movie) {
-                  return FittedBox(
-                    fit: BoxFit.fill,
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: 100.0,
-                          minHeight: 100.0,
+                  if (this.showDetails) {
+                    return Transform.translate(
+                      offset: Offset(
+                          0.0,
+                          0.5 *
+                              constraints.maxHeight *
+                              this.inactiveSpringTween.value),
+                      child: Opacity(
+                        opacity: 0.5,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 100.0,
+                            minHeight: 100.0,
+                            maxWidth: 0.33 * constraints.maxWidth,
+                            maxHeight: 0.5 * constraints.maxHeight,
+                          ),
+                          child: FittedBox(
+                            fit: BoxFit.fill,
+                            child: CachedNetworkImage(
+                                imageUrl: movie.value['url']['tile']),
+                          ),
                         ),
-                        child:
-                            CachedNetworkImage(imageUrl: movie['url']['tall']),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return FittedBox(
+                      fit: BoxFit.fill,
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: 100.0,
+                            minHeight: 100.0,
+                          ),
+                          child: CachedNetworkImage(
+                              imageUrl: movie['url']['tall']),
+                        ),
+                      ),
+                    );
+                  }
                 }).toList(),
               ),
             );
