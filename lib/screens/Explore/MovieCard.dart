@@ -8,7 +8,7 @@ class MovieCard extends StatefulWidget {
   final Function onDragDown;
   final Function registerTween;
   final AnimationController animationController;
-  bool showDetails;
+  final bool showDetails;
   MovieCard({
     Key key,
     this.movie,
@@ -129,11 +129,9 @@ class _MovieCardState extends State<MovieCard>
                             height: 20.0,
                           ),
                           Expanded(
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 50.0),
-                                child: CardDetails(movie: this.widget.movie),
-                              ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 50.0),
+                              child: CardDetails(movie: this.widget.movie),
                             ),
                           ),
                         ],
@@ -158,7 +156,10 @@ class CardDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Column(
+        return ListView(
+          shrinkWrap: true,
+          primary: true,
+          physics: ClampingScrollPhysics(),
           children: [
             CardActors(movie: this.movie),
             SizedBox(height: 40.0),
@@ -328,7 +329,7 @@ class CardTitle extends StatelessWidget {
   }) : super(key: key);
 
   final title;
-  final TextStyle TitleStyle = const TextStyle(
+  final TextStyle titleStyle = const TextStyle(
     fontWeight: FontWeight.w700,
     fontSize: 25.0,
   );
@@ -337,7 +338,7 @@ class CardTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       this.title,
-      style: TitleStyle,
+      style: titleStyle,
     );
   }
 }

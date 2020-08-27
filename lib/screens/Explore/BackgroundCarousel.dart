@@ -3,22 +3,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:movie_booking_app/models.dart';
 
 class BackgroundCarousel extends StatelessWidget {
-  MoviesModel moviesList;
-  PageController controller;
-  bool showDetails;
-  double index;
+  final MoviesModel moviesList;
+  final PageController controller;
+  final bool showDetails;
+  final double index;
   final Function registerTween;
   final AnimationController animationController;
   Animation activeSpringTween;
   Animation inactiveSpringTween;
 
   BackgroundCarousel({
-    this.moviesList,
-    this.controller,
-    this.showDetails,
-    this.index,
-    this.registerTween,
-    this.animationController,
+    @required this.moviesList,
+    @required this.controller,
+    @required this.showDetails,
+    @required this.index,
+    @required this.registerTween,
+    @required this.animationController,
   }) {
     this.activeSpringTween = this.registerTween(
       startValue: 1.0,
