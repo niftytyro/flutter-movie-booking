@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -10,130 +9,149 @@ class Booking extends StatefulWidget {
 }
 
 class _BookingState extends State<Booking> {
-  // bool _loaded = false;
+  bool _loaded = false;
   String dropdownValue = 'Tomorrow';
   int selectedTime = 0;
 
   @override
   void initState() {
-    // Future.delayed(Duration(milliseconds: 250), () {
-    //   setState(() {
-    //     this._loaded = true;
-    //   });
-    // });
+    Future.delayed(Duration(milliseconds: 250), () {
+      setState(() {
+        this._loaded = true;
+      });
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (this._loaded) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: 0.05 * MediaQuery.of(context).size.width,
-            vertical: 20.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  color: Colors.white,
-                  width: constraints.maxWidth,
-                  height: 0.3 * constraints.maxHeight,
-                ),
-                Container(
-                  width: constraints.maxWidth,
-                  height: 0.4 * constraints.maxHeight,
-                  child: SeatsGrid(),
-                ),
-                Container(
-                  width: constraints.maxWidth,
-                  height: 0.25 * constraints.maxHeight,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SeatIndicatorsRow(),
-                      Row(
-                        children: [
-                          DayPicker(
-                            dropdownValue: dropdownValue,
-                            onChanged: (String newValue) {
-                              setState(() {
-                                dropdownValue = newValue;
-                              });
-                            },
-                          ),
-                          SizedBox(
-                            width: 15.0,
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        this.selectedTime = 0;
-                                      });
-                                    },
-                                    child: TimeMenuItem(
+    if (this._loaded) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Padding(
+          padding: EdgeInsets.fromLTRB(0.05 * MediaQuery.of(context).size.width,
+              0.0, 0.05 * MediaQuery.of(context).size.width, 20.0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              print(0.3 * constraints.maxHeight);
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: constraints.maxWidth,
+                    height: 0.3 * constraints.maxHeight,
+                    child: CustomPaint(
+                      painter: ScreenPainter(),
+                    ),
+                  ),
+                  Container(
+                    width: constraints.maxWidth,
+                    height: 0.4 * constraints.maxHeight,
+                    child: SeatsGrid(),
+                  ),
+                  Container(
+                    width: constraints.maxWidth,
+                    height: 0.25 * constraints.maxHeight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SeatIndicatorsRow(),
+                        Row(
+                          children: [
+                            DayPicker(
+                              dropdownValue: dropdownValue,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  dropdownValue = newValue;
+                                });
+                              },
+                            ),
+                            SizedBox(
+                              width: 15.0,
+                            ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    TimeMenuItem(
                                       text: '17.30',
                                       background: this.selectedTime == 0
                                           ? Colors.red
                                           : Colors.transparent,
+                                      onTap: () {
+                                        setState(() {
+                                          this.selectedTime = 0;
+                                        });
+                                      },
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        this.selectedTime = 1;
-                                      });
-                                    },
-                                    child: TimeMenuItem(
+                                    TimeMenuItem(
                                       text: '18.00',
                                       background: this.selectedTime == 1
                                           ? Colors.red
                                           : Colors.transparent,
+                                      onTap: () {
+                                        setState(() {
+                                          this.selectedTime = 1;
+                                        });
+                                      },
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        this.selectedTime = 2;
-                                      });
-                                    },
-                                    child: TimeMenuItem(
+                                    TimeMenuItem(
                                       text: '20.40',
                                       background: this.selectedTime == 2
                                           ? Colors.red
                                           : Colors.transparent,
+                                      onTap: () {
+                                        setState(() {
+                                          this.selectedTime = 2;
+                                        });
+                                      },
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      PayButton(
-                        width: constraints.maxWidth,
-                      ),
-                    ],
+                          ],
+                        ),
+                        PayButton(
+                          width: constraints.maxWidth,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
-      ),
-    );
-    // } else {
-    //   return Container();
-    // }
+      );
+    } else {
+      return Container();
+    }
   }
+}
+
+class ScreenPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 5.0;
+
+    var path = Path();
+    path.moveTo(0.1 * size.width, 0.6 * size.height);
+    path.quadraticBezierTo(0.5 * size.width, 0.4 * size.height,
+        0.9 * size.width, 0.6 * size.height);
+    path.lineTo(0.9 * size.width, 0.6 * size.height + 5.0);
+    path.quadraticBezierTo(0.5 * size.width, 0.4 * size.height + 5.0,
+        0.1 * size.width, 0.6 * size.height + 5.0);
+    canvas.drawPath(path, paint);
+    canvas.drawShadow(path.shift(Offset(0.0, 5.0)), Colors.red[400], 2.0, true);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 class PayButton extends StatelessWidget {
@@ -164,23 +182,28 @@ class TimeMenuItem extends StatelessWidget {
     Key key,
     @required this.text,
     this.background,
+    this.onTap,
   }) : super(key: key);
   final String text;
   final Color background;
+  final Function onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 15.0),
-      padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 15.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[800]),
-        borderRadius: BorderRadius.circular(5.0),
-        color: background,
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white, fontSize: 12.0),
+    return GestureDetector(
+      onTap: this.onTap,
+      child: Container(
+        margin: EdgeInsets.only(right: 15.0),
+        padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 15.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[800]),
+          borderRadius: BorderRadius.circular(5.0),
+          color: background,
+        ),
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white, fontSize: 12.0),
+        ),
       ),
     );
   }
