@@ -67,6 +67,7 @@ class MyApp extends StatelessWidget {
       systemNavigationBarColor: Colors.transparent,
       statusBarColor: Colors.transparent,
     ));
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {

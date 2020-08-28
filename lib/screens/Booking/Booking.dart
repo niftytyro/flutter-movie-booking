@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Booking extends StatefulWidget {
@@ -8,128 +10,129 @@ class Booking extends StatefulWidget {
 }
 
 class _BookingState extends State<Booking> {
-  bool _loaded = false;
+  // bool _loaded = false;
   String dropdownValue = 'Tomorrow';
   int selectedTime = 0;
+
   @override
   void initState() {
-    Future.delayed(Duration(milliseconds: 250), () {
-      setState(() {
-        this._loaded = true;
-      });
-    });
+    // Future.delayed(Duration(milliseconds: 250), () {
+    //   setState(() {
+    //     this._loaded = true;
+    //   });
+    // });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (this._loaded) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: 0.05 * MediaQuery.of(context).size.width,
-              vertical: 20.0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    color: Colors.white,
-                    width: constraints.maxWidth,
-                    height: 0.3 * constraints.maxHeight,
-                  ),
-                  Container(
-                    width: constraints.maxWidth,
-                    height: 0.4 * constraints.maxHeight,
-                    child: SeatsGrid(),
-                  ),
-                  Container(
-                    width: constraints.maxWidth,
-                    height: 0.25 * constraints.maxHeight,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SeatIndicatorsRow(),
-                        Row(
-                          children: [
-                            DayPicker(
-                              dropdownValue: dropdownValue,
-                              onChanged: (String newValue) {
-                                setState(() {
-                                  dropdownValue = newValue;
-                                });
-                              },
-                            ),
-                            SizedBox(
-                              width: 15.0,
-                            ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          this.selectedTime = 0;
-                                        });
-                                      },
-                                      child: TimeMenuItem(
-                                        text: '17.30',
-                                        background: this.selectedTime == 0
-                                            ? Colors.red
-                                            : Colors.transparent,
-                                      ),
+    // if (this._loaded) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: 0.05 * MediaQuery.of(context).size.width,
+            vertical: 20.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  color: Colors.white,
+                  width: constraints.maxWidth,
+                  height: 0.3 * constraints.maxHeight,
+                ),
+                Container(
+                  width: constraints.maxWidth,
+                  height: 0.4 * constraints.maxHeight,
+                  child: SeatsGrid(),
+                ),
+                Container(
+                  width: constraints.maxWidth,
+                  height: 0.25 * constraints.maxHeight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SeatIndicatorsRow(),
+                      Row(
+                        children: [
+                          DayPicker(
+                            dropdownValue: dropdownValue,
+                            onChanged: (String newValue) {
+                              setState(() {
+                                dropdownValue = newValue;
+                              });
+                            },
+                          ),
+                          SizedBox(
+                            width: 15.0,
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        this.selectedTime = 0;
+                                      });
+                                    },
+                                    child: TimeMenuItem(
+                                      text: '17.30',
+                                      background: this.selectedTime == 0
+                                          ? Colors.red
+                                          : Colors.transparent,
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          this.selectedTime = 1;
-                                        });
-                                      },
-                                      child: TimeMenuItem(
-                                        text: '18.00',
-                                        background: this.selectedTime == 1
-                                            ? Colors.red
-                                            : Colors.transparent,
-                                      ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        this.selectedTime = 1;
+                                      });
+                                    },
+                                    child: TimeMenuItem(
+                                      text: '18.00',
+                                      background: this.selectedTime == 1
+                                          ? Colors.red
+                                          : Colors.transparent,
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          this.selectedTime = 2;
-                                        });
-                                      },
-                                      child: TimeMenuItem(
-                                        text: '20.40',
-                                        background: this.selectedTime == 2
-                                            ? Colors.red
-                                            : Colors.transparent,
-                                      ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        this.selectedTime = 2;
+                                      });
+                                    },
+                                    child: TimeMenuItem(
+                                      text: '20.40',
+                                      background: this.selectedTime == 2
+                                          ? Colors.red
+                                          : Colors.transparent,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                        PayButton(
-                          width: constraints.maxWidth,
-                        ),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      PayButton(
+                        width: constraints.maxWidth,
+                      ),
+                    ],
                   ),
-                ],
-              );
-            },
-          ),
+                ),
+              ],
+            );
+          },
         ),
-      );
-    } else {
-      return Container();
-    }
+      ),
+    );
+    // } else {
+    //   return Container();
+    // }
   }
 }
 
@@ -168,7 +171,7 @@ class TimeMenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 5.0),
+      margin: EdgeInsets.only(right: 15.0),
       padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 15.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[800]),
@@ -269,35 +272,78 @@ class SeatIndicator extends StatelessWidget {
   }
 }
 
-class SeatsGrid extends StatelessWidget {
+class SeatsGrid extends StatefulWidget {
   const SeatsGrid({
     Key key,
   }) : super(key: key);
 
   @override
+  _SeatsGridState createState() => _SeatsGridState();
+}
+
+class _SeatsGridState extends State<SeatsGrid> {
+  List<List> _selectedSeats = [];
+
+  bool isSelected(List position) {
+    for (int x = 0; x < this._selectedSeats.length; x++) {
+      if (listEquals(this._selectedSeats[x], position)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        for (int i = 0; i < 10; i++)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              for (int j = 0; j < 10; j++)
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(5.0),
-                      topRight: Radius.circular(5.0),
+    return LayoutBuilder(builder: (context, constraints) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          for (int i = 0; i < 10; i++)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                for (int j = 0; j < 10; j++)
+                  GestureDetector(
+                    onTapDown: (details) {
+                      setState(() {
+                        if (this.isSelected([i, j])) {
+                          this
+                              ._selectedSeats
+                              .removeWhere((item) => listEquals(item, [i, j]));
+                        } else {
+                          this._selectedSeats.add([i, j]);
+                        }
+                      });
+                    },
+                    onPanUpdate: (details) {
+                      print([i, j]);
+                    },
+                    child: Container(
+                      height: constraints.maxHeight / 10,
+                      width: constraints.maxWidth / 10,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: this.isSelected([i, j])
+                                ? Colors.red
+                                : Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5.0),
+                              topRight: Radius.circular(5.0),
+                            ),
+                          ),
+                          height: 20.0,
+                          width: 20.0,
+                        ),
+                      ),
                     ),
                   ),
-                  height: 20.0,
-                  width: 20.0,
-                ),
-            ],
-          ),
-      ],
-    );
+              ],
+            ),
+        ],
+      );
+    });
   }
 }
